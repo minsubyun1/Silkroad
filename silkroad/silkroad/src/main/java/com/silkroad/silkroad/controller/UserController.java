@@ -1,19 +1,19 @@
 package com.silkroad.silkroad.controller;
 
 import com.silkroad.silkroad.domain.user.User;
+import com.silkroad.silkroad.dto.UserProfileUpdateRequest;
 import com.silkroad.silkroad.dto.user.UserSignupRequest;
 import com.silkroad.silkroad.repository.UserRepository;
+import com.silkroad.silkroad.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -32,5 +32,11 @@ public class UserController {
 
         userRepository.save(user);
         return "회원가입이 완료되었습니다.";
+    }
+
+    @PatchMapping("/{userId}/profile")
+    public String updateProfile(@PathVariable("userId") Long userId, @RequestBody UserProfileUpdateRequest request){
+        userService.updateProfile(userId, request);
+        return "프로필이 성공적으로 수정되었습니다.";
     }
 }

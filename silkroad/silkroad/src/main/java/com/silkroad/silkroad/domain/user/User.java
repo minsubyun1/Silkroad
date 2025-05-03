@@ -28,7 +28,7 @@ public class User {
 //    @Column(nullable = false)
 //    private String phone; // 연락처
 
-//    private String profileImageUrl; // 프로필 사진 경로 (Optional)
+    private String profileImageUrl; // 프로필 사진 경로 (Optional)
 
     private String location; // 거주 지역(Optional)
 
