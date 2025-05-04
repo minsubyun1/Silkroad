@@ -1,6 +1,7 @@
 package com.silkroad.silkroad.service;
 
 import com.silkroad.silkroad.domain.user.User;
+import com.silkroad.silkroad.dto.UserInfoResponse;
 import com.silkroad.silkroad.dto.UserProfileUpdateRequest;
 import com.silkroad.silkroad.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,12 @@ public class UserService {
                 user.setName(request.getName());
                 user.setLocation(request.getLocation());
                 user.setProfileImageUrl(request.getProfileImageUrl());
+    }
+
+    public UserInfoResponse getMyInfo(String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+
+        return new UserInfoResponse(user.getUsername(), user.getName(), user.getLocation(), user.getProfileImageUrl());
     }
 }
