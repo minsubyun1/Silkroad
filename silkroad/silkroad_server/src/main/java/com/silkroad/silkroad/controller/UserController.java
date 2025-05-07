@@ -31,6 +31,7 @@ public class UserController {
                 .password(passwordEncoder.encode(request.getPassword())) // 암호화
                 .name(request.getName())
                 .location(request.getLocation())
+                .profileImageUrl(request.getProfileImageUrl())
                 .build();
 
         userRepository.save(user);

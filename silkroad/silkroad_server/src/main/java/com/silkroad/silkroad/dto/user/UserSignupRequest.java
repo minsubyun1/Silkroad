@@ -10,4 +10,5 @@ public class UserSignupRequest {
     private String password;
     private String name;
     private String location;
+    private String profileImageUrl;
 }
