@@ -13,6 +13,8 @@ public class ProductDetailResponse {
     private int price;
     private String description;
     private String imageUrl;
+
+    private String sellerUsername;
     private String sellerName;
     private String sellerLocation;
     private String sellerProfileImage;

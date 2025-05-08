@@ -54,4 +54,10 @@ public class Product {
     private LocalDateTime createdAt;
 
 
+    public void update(String title, String description, int price, String imageUrl) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
+    }
 }

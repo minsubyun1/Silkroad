@@ -7,6 +7,7 @@ import com.silkroad.silkroad.domain.user.User;
 import com.silkroad.silkroad.dto.product.ProductDetailResponse;
 import com.silkroad.silkroad.dto.product.ProductRegisterRequest;
 import com.silkroad.silkroad.dto.product.ProductSummaryResponse;
+import com.silkroad.silkroad.dto.product.ProductUpdateRequest;
 import com.silkroad.silkroad.repository.ProductRepository;
 import com.silkroad.silkroad.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,11 +74,37 @@ public class ProductService {
                 product.getPrice(),
                 product.getDescription(),
                 product.getImageUrl(),
+                seller.getUsername(),
                 seller.getName(),
                 seller.getLocation(),
                 seller.getProfileImageUrl(),
                 product.getBookmarkCount(),
                 product.getCreatedAt()
         );
+    }
+
+    @Transactional
+    public void updateProduct(Long productId, String username, ProductUpdateRequest request){
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        // 권한 확인
+        if (!product.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+
+        product.update(request.getTitle(), request.getDescription(), request.getPrice(), request.getImageUrl());
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId, String username){
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        if (!product.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        productRepository.delete(product);
     }
 }
