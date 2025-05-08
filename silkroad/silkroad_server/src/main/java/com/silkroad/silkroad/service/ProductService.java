@@ -55,7 +55,8 @@ public class ProductService {
                         p.getTitle(),
                         p.getPrice(),
                         p.getImageUrl(),
-                        p.getUser().getLocation(),
+                        p.getCategory().getDisplayName(),
+                        p.getBookmarkCount(),
                         p.getCreatedAt()
                 ))
                 .collect(Collectors.toList());

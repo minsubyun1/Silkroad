@@ -12,6 +12,7 @@ public class ProductSummaryResponse {
     private String title;
     private int price;
     private String imageUrl;
-    private String location; // 판매자 위치
+    private String categoryDisplayName;
+    private int bookmarkCount;
     private LocalDateTime createdAt;
 }
