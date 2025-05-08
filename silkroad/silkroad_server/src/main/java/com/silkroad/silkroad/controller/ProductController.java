@@ -3,6 +3,7 @@ package com.silkroad.silkroad.controller;
 import com.silkroad.silkroad.dto.product.ProductDetailResponse;
 import com.silkroad.silkroad.dto.product.ProductRegisterRequest;
 import com.silkroad.silkroad.dto.product.ProductSummaryResponse;
+import com.silkroad.silkroad.dto.product.ProductUpdateRequest;
 import com.silkroad.silkroad.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,5 +33,18 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ProductDetailResponse getProductDetail(@PathVariable("productId") Long productId){
         return productService.getProductDetail(productId);
+    }
+
+    @PatchMapping("/{productId}")
+    public String updateProduct(@PathVariable("productId") Long productId, @AuthenticationPrincipal UserDetails userDetails, @RequestBody ProductUpdateRequest request){
+        productService.updateProduct(productId, userDetails.getUsername(), request);
+        return "상품이 수정되었습니다.";
+    }
+
+    @DeleteMapping("/{productId}")
+    public String deleteProduct(@PathVariable("productId") Long productId,
+                                @AuthenticationPrincipal UserDetails userDetails){
+        productService.deleteProduct(productId, userDetails.getUsername());
+        return "상품이 삭제되었습니다.";
     }
 }
