@@ -108,4 +108,31 @@ public class ProductService {
 
         productRepository.delete(product);
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductSummaryResponse> searchProducts(String keyword, ProductCategory category){
+        List<Product> products;
+
+        if (keyword != null && category != null) {
+            products = productRepository.findByTitleContainingIgnoreCaseAndCategory(keyword, category);
+        } else if(keyword != null) {
+            products = productRepository.findByTitleContainingIgnoreCase(keyword);
+        } else if(category != null) {
+            products = productRepository.findByCategory(category);
+        } else {
+            products = productRepository.findAll();
+        }
+
+        return products.stream()
+                .map(p -> new ProductSummaryResponse(
+                        p.getId(),
+                        p.getTitle(),
+                        p.getPrice(),
+                        p.getImageUrl(),
+                        p.getCategory().getDisplayName(),
+                        p.getBookmarkCount(),
+                        p.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+    }
 }
