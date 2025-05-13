@@ -1,5 +1,6 @@
 package com.silkroad.silkroad.controller;
 
+import com.silkroad.silkroad.domain.product.ProductCategory;
 import com.silkroad.silkroad.dto.product.ProductDetailResponse;
 import com.silkroad.silkroad.dto.product.ProductRegisterRequest;
 import com.silkroad.silkroad.dto.product.ProductSummaryResponse;
@@ -46,5 +47,13 @@ public class ProductController {
                                 @AuthenticationPrincipal UserDetails userDetails){
         productService.deleteProduct(productId, userDetails.getUsername());
         return "상품이 삭제되었습니다.";
+    }
+
+    @GetMapping("/search")
+    public List<ProductSummaryResponse> searchProducts(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "category", required = false)ProductCategory category
+            ) {
+        return productService.searchProducts(keyword, category);
     }
 }
