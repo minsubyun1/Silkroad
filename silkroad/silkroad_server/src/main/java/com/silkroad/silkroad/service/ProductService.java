@@ -135,4 +135,16 @@ public class ProductService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void markProductAsSold(Long productId, String username) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        if (!product.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("해당 상품을 수정할 권한이 없습니다.");
+        }
+
+        product.setSold(true);
+    }
 }
