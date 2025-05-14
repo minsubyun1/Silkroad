@@ -2,10 +2,7 @@ package com.silkroad.silkroad.domain.product;
 
 import com.silkroad.silkroad.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -43,6 +41,7 @@ public class Product {
     @Column(nullable = false)
     private boolean isSold; // 판매 완료 여부 (true면 파냄 완료)
 
+    @Setter
     @Column(nullable = false)
     private int bookmarkCount = 0; // 찜 수
 
