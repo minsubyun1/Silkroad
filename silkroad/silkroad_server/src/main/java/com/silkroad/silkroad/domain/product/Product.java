@@ -38,6 +38,7 @@ public class Product {
     @Column(nullable = false)
     private int price; // 가격
 
+    @Setter
     @Column(nullable = false)
     private boolean isSold; // 판매 완료 여부 (true면 파냄 완료)
 
