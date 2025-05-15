@@ -58,9 +58,10 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/complete")
-    public String completeSale(@PathVariable("productId") Long productId,
-                               @AuthenticationPrincipal UserDetails userDetails) {
-        productService.markProductAsSold(productId, userDetails.getUsername());
-        return "상품이 판매 완료 처리되었습니다.";
+    public String completeSale(@AuthenticationPrincipal UserDetails sellerDetails,
+                               @PathVariable("productId") Long productId,
+                               @RequestParam(name = "buyerUsername") String buyerUsername) {
+        productService.completeSale(sellerDetails.getUsername(), productId, buyerUsername);
+        return "거래가 완료되었습니다.";
     }
 }
