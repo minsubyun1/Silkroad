@@ -28,4 +28,10 @@ public class ChatMessage {
     private String message; // 메세지 내용
 
     private LocalDateTime sentAt = LocalDateTime.now(); // 메세지 보낸 시각
+
+    public ChatMessage(ChatRoom chatRoom, User sender, String message) {
+        this.chatRoom = chatRoom;
+        this.sender = sender;
+        this.message = message;
+    }
 }

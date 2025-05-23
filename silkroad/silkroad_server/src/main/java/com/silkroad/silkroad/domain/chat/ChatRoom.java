@@ -18,6 +18,10 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product; // 거래하려는 상품
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer; // 구매자
@@ -26,12 +30,16 @@ public class ChatRoom {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller; // 판매자
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product; // 거래하려는 상품
+
 
     private LocalDateTime createdAt = LocalDateTime.now(); // 채팅방 생성 시간
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new ArrayList<>();
+
+    public ChatRoom(Product product, User buyer, User seller) {
+        this.product = product;
+        this.buyer = buyer;
+        this.seller = seller;
+    }
 }

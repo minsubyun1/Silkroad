@@ -10,15 +10,13 @@ import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    // 전체 채팅방 목록
+    // 특정 유저가 참여 중인 모든 채팅방
     List<ChatRoom> findByBuyerOrSeller(User buyer, User seller);
 
-    // 상품 + 구매자 기준으로 채팅방 찾기 (정확한 방법)
+    // 상품 + 구매자로 채팅방 존재 여부 확인 (중복 생성 방지)
     Optional<ChatRoom> findByProductAndBuyer(Product product, User buyer);
 
-    // 구매자 기준 채팅방 목록 조회
+    // 아래 둘은 조회 페이지에서 역할 별로 필터링할 때 활용 가능
     List<ChatRoom> findByBuyer(User buyer);
-
-    // 판매자 기준 채팅방 목록 조회
     List<ChatRoom> findBySeller(User seller);
 }
