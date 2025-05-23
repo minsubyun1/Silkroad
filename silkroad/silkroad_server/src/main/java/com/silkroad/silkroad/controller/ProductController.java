@@ -65,13 +65,4 @@ public class ProductController {
             ) {
         return productService.searchProducts(keyword, category);
     }
-
-    @Operation(summary = "거래 완료 처리", description = "판매자가 구매자 아이디를 선택하여 거래를 완료 처리합니다.")
-    @PatchMapping("/{productId}/complete")
-    public String completeSale(@AuthenticationPrincipal UserDetails sellerDetails,
-                               @PathVariable("productId") Long productId,
-                               @RequestParam(name = "buyerUsername") String buyerUsername) {
-        productService.completeSale(sellerDetails.getUsername(), productId, buyerUsername);
-        return "거래가 완료되었습니다.";
-    }
 }
