@@ -1,5 +1,6 @@
 package com.silkroad.silkroad.service;
 
+import com.silkroad.silkroad.domain.Order.Order;
 import com.silkroad.silkroad.domain.chat.ChatMessage;
 import com.silkroad.silkroad.domain.chat.ChatRoom;
 import com.silkroad.silkroad.domain.product.Product;
@@ -8,10 +9,7 @@ import com.silkroad.silkroad.dto.chat.ChatMessageRequest;
 import com.silkroad.silkroad.dto.chat.ChatMessageResponse;
 import com.silkroad.silkroad.dto.chat.ChatRoomDetailResponse;
 import com.silkroad.silkroad.dto.chat.ChatRoomResponse;
-import com.silkroad.silkroad.repository.ChatMessageRepository;
-import com.silkroad.silkroad.repository.ChatRoomRepository;
-import com.silkroad.silkroad.repository.ProductRepository;
-import com.silkroad.silkroad.repository.UserRepository;
+import com.silkroad.silkroad.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +25,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     // 채팅방 목록 조회
     @Transactional(readOnly = true)
@@ -73,7 +72,8 @@ public class ChatService {
                 opponent.getName(),
                 product.getTitle(),
                 product.getPrice(),
-                product.getImageUrl()
+                product.getImageUrl(),
+                room.getSeller().equals(user) // 판매 완료 처리 시 판별 위함.
         );
     }
 
@@ -97,6 +97,7 @@ public class ChatService {
     }
 
     //  채팅방 생성
+    @Transactional
     public Long createChatRoom(String username, Long productId) {
         User buyer = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
@@ -159,5 +160,38 @@ public class ChatService {
                 lastMessage != null ? lastMessage.getMessage() : "(아직 메세지 없음)",
                 lastMessage != null ? lastMessage.getSentAt() : null
         );
+
+
     }
+
+    // 판매 완료 처리
+    @Transactional
+    public void completeTransaction(Long roomId, String username) {
+        User seller = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("판매자를 찾을 수 없습니다."));
+
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+
+        // 권한 확인 (요청자가 판매자인지)
+        if (!room.getSeller().equals(seller)) {
+            throw new IllegalArgumentException("판매자만 거래를 완료할 수 있습니다.");
+        }
+
+        Product product = room.getProduct();
+        User buyer = room.getBuyer();
+
+        if(product.isSold()) {
+            throw new IllegalArgumentException("이미 거래가 완료된 상품입니다.");
+        }
+
+        // 판매 완료 처리
+        product.setSold(true);
+
+        // Order 저장
+        Order order = new Order(product, buyer);
+        orderRepository.save(order);
+    }
+
+
 }

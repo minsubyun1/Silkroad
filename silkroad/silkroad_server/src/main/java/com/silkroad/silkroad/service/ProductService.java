@@ -139,30 +139,6 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void completeSale(String sellerUsername, Long productId, String buyerUsername) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-
-        // 판매자 검증
-        if (!product.getUser().getUsername().equals(sellerUsername)) {
-            throw new IllegalArgumentException("판매자만 해당 상품을 완료 처리할 수 있습니다.");
-        }
-
-        if (product.isSold()) {
-            throw new IllegalArgumentException("이미 판매 완료된 상품입니다.");
-        }
-
-        User buyer = userRepository.findByUsername(buyerUsername)
-                .orElseThrow(() -> new IllegalArgumentException("구매자 정보를 찾을 수 없습니다."));
-
-        // 판매 완료 처리
-        product.setSold(true);
-
-        // 구매 기록 저장
-        Order order = new Order(product, buyer);
-        orderRepository.save(order);
-    }
 
 
 }

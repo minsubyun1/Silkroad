@@ -67,4 +67,11 @@ public class ChatController {
         chatService.sendMessage(userDetails.getUsername(), roomId, request);
     }
 
+    @PatchMapping("/room/{roomId}/complete")
+    public String completeTransaction(@PathVariable("roomId") Long roomId,
+                                      @AuthenticationPrincipal UserDetails userDetails) {
+        chatService.completeTransaction(roomId, userDetails.getUsername());
+        return "거래가 완료되었습니다.";
+    }
+
 }
