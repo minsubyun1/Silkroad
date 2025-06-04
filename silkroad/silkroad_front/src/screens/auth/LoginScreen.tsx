@@ -36,7 +36,7 @@ export default function LoginScreen() {
               onPress={() => {
               rootNavigation.reset({
                 index: 0,
-                routes: [{ name: 'MainTab' }],
+                routes: [{ name: 'Main' }],
               });
             }}
             >

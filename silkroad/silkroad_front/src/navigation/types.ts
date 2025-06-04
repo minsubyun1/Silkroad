@@ -7,5 +7,5 @@ export type AuthStackParamList = {
 
 export type RootStackParamList = {
   Auth: undefined;
-  MainTab: undefined;
+  Main: undefined;
 };

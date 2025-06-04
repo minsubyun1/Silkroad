@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const dummyData = [
   { id: '1', title: '나이키 에어포스', price: '100,000원', image: require('../../../assets/images/shoes.png'), likes: 12, date: '3일 전' },
-  { id: '2', title: '아이몽 내한 티켓 5/12', price: '250,000원', image: require('../../../assets/images/ticket.png'), likes: 12, date: '3일 전' },
-  { id: '3', title: '나이키 에어포스', price: '100,000원', image: require('../../../assets/images/shoes.png'), likes: 12, date: '3일 전' },
-  { id: '4', title: '아이몽 내한 티켓 5/12', price: '250,000원', image: require('../../../assets/images/ticket.png'), likes: 12, date: '3일 전' },
+  { id: '2', title: '아이묭 내한 티켓', price: '250,000원', image: require('../../../assets/images/ticket.png'), likes: 197, date: '1주일 전' },
+  { id: '3', title: '맥북 프로', price: '1,500,000원', image: require('../../../assets/images/macbook.png'), likes: 2, date: '2일 전' },
+  { id: '4', title: '베켄바우어 트랙탑', price: '120,000원', image: require('../../../assets/images/cloth.png'), likes: 98, date: '4일 전' },
 ];
 
 
@@ -23,7 +24,9 @@ const screenWidth = Dimensions.get('window').width;
 const cardWidth = (screenWidth - 48) / 2;
 
 export default function MainProductList() {
+  const navigation = useNavigation<any>();
   return (
+    
     <View style={styles.container}>
       <Text style={styles.title}>신길동에서{"\n"}어떤 보물을 찾고 계신가요?</Text>
 
@@ -49,7 +52,10 @@ export default function MainProductList() {
         keyExtractor={(item) => item.id}
         columnWrapperStyle={styles.row}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('ProductDetail', { id:item.id })}
+          style={styles.card}>
             <Image source={item.image} style={styles.image} />
 
             <View style={styles.metaRow}>
@@ -61,7 +67,7 @@ export default function MainProductList() {
               <Text style={styles.price}>{item.price}</Text>
               <Text style={styles.productDate}>{item.date}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         scrollEnabled={false}
       />
@@ -141,7 +147,7 @@ const styles = StyleSheet.create({
   },
   productLikes: {
     fontSize: 12,
-    color: '#E85AAF',
+    color: 'red',
   },
   price: {
     fontSize: 13,
