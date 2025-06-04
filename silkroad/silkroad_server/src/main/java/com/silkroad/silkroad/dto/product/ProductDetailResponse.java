@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -12,7 +13,7 @@ public class ProductDetailResponse {
     private String title;
     private int price;
     private String description;
-    private String imageUrl;
+    List<String> imageUrls;
 
     private String sellerUsername;
     private String sellerName;

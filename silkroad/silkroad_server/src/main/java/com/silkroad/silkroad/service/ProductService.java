@@ -4,6 +4,7 @@ package com.silkroad.silkroad.service;
 import com.silkroad.silkroad.domain.Order.Order;
 import com.silkroad.silkroad.domain.product.Product;
 import com.silkroad.silkroad.domain.product.ProductCategory;
+import com.silkroad.silkroad.domain.product.ProductImage;
 import com.silkroad.silkroad.domain.user.User;
 import com.silkroad.silkroad.dto.product.ProductDetailResponse;
 import com.silkroad.silkroad.dto.product.ProductRegisterRequest;
@@ -26,6 +27,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final FileUploadService fileUploadService;
 
     @Transactional
     public void registerProduct(String username, ProductRegisterRequest request){
@@ -40,10 +42,19 @@ public class ProductService {
                         .title(request.getTitle())
                         .description(request.getDescription())
                         .price(request.getPrice())
-                        .imageUrl(request.getImageUrl())
                         .isSold(false)
                         .bookmarkCount(0)
                         .build();
+
+        // 이미지 업로드 및 매핑
+        List<String> imageUrls = fileUploadService.upload(request.getImageFiles(), "products");
+        List<ProductImage> productImages = imageUrls.stream()
+                .map(url -> new ProductImage(url, product))
+                .collect(Collectors.toList());
+
+        product.setImages(productImages);
+
+        productRepository.save(product); // cascade 덕분에 이미지도 함께 저장됨
 
         productRepository.save(product);
     }
@@ -57,7 +68,7 @@ public class ProductService {
                         p.getId(),
                         p.getTitle(),
                         p.getPrice(),
-                        p.getImageUrl(),
+                        p.getImages().isEmpty() ? null : p.getImages().get(0).getImageUrl(),
                         p.getCategory().getDisplayName(),
                         p.getBookmarkCount(),
                         p.getCreatedAt()
@@ -72,12 +83,17 @@ public class ProductService {
 
         User seller = product.getUser();
 
+        // 전체 이미지 리스트 추출
+        List<String> imageUrls = product.getImages().stream()
+                .map(ProductImage::getImageUrl)
+                .collect(Collectors.toList());
+
         return new ProductDetailResponse(
                 product.getId(),
                 product.getTitle(),
                 product.getPrice(),
                 product.getDescription(),
-                product.getImageUrl(),
+                imageUrls,
                 seller.getUsername(),
                 seller.getName(),
                 seller.getLocation(),
@@ -92,12 +108,13 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        // 권한 확인
         if (!product.getUser().getUsername().equals(username)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
-        product.update(request.getTitle(), request.getDescription(), request.getPrice(), request.getImageUrl());
+        // 새로운 이미지 URL들로 교체
+        List<String> imageUrls = request.getImageUrls(); // DTO 수정 필요
+        product.update(request.getTitle(), request.getDescription(), request.getPrice(), imageUrls);
     }
 
     @Transactional
@@ -131,7 +148,7 @@ public class ProductService {
                         p.getId(),
                         p.getTitle(),
                         p.getPrice(),
-                        p.getImageUrl(),
+                        p.getImages().isEmpty() ? null : p.getImages().get(0).getImageUrl(),
                         p.getCategory().getDisplayName(),
                         p.getBookmarkCount(),
                         p.getCreatedAt()

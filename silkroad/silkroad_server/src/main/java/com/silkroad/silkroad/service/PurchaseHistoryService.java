@@ -30,7 +30,7 @@ public class PurchaseHistoryService {
                         order.getProduct().getId(),
                         order.getProduct().getTitle(),
                         order.getProduct().getPrice(),
-                        order.getProduct().getImageUrl(),
+                        order.getProduct().getImages().isEmpty() ? null : order.getProduct().getImages().get(0).getImageUrl(),
                         order.getOrderTime()
                 ))
                 .collect(Collectors.toList());

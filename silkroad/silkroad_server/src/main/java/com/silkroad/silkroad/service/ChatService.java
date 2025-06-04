@@ -72,7 +72,7 @@ public class ChatService {
                 opponent.getName(),
                 product.getTitle(),
                 product.getPrice(),
-                product.getImageUrl(),
+                product.getImages().isEmpty() ? null : product.getImages().get(0).getImageUrl(),
                 room.getSeller().equals(user) // 판매 완료 처리 시 판별 위함.
         );
     }

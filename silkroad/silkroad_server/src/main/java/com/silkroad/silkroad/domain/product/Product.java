@@ -7,11 +7,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -46,18 +49,26 @@ public class Product {
     @Column(nullable = false)
     private int bookmarkCount = 0; // 찜 수
 
-    @Column(nullable = false)
-    private String imageUrl;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
 
-    public void update(String title, String description, int price, String imageUrl) {
+    public void update(String title, String description, int price, List<String> imageUrls) {
         this.title = title;
         this.description = description;
         this.price = price;
-        this.imageUrl = imageUrl;
+
+        // 기존 이미지 초기화 (orphanRemoval=true 덕분에 자동 삭제됨)
+        this.images.clear();
+
+        List<ProductImage> updatedImages = imageUrls.stream()
+                .map(url -> new ProductImage(url, this))
+                .collect(Collectors.toList());
+
+        this.images.addAll(updatedImages);
     }
 }

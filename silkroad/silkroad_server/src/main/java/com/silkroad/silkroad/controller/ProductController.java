@@ -27,7 +27,7 @@ public class ProductController {
 
     @Operation(summary = "상품 등록", description = "상품 정보를 입력하여 새 상품을 등록합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> registerProduct(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ProductRegisterRequest request){
+    public ResponseEntity<ApiResponse<String>> registerProduct(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute ProductRegisterRequest request){
         productService.registerProduct(userDetails.getUsername(), request);
         return ResponseEntity.ok(new ApiResponse<>(true, "상품이 성공적으로 등록되었습니다.", null));
     }
