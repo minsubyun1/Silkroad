@@ -11,13 +11,13 @@ import { RootStackParamList } from '../navigation/types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  const isLoggedIn = true; // TODO: 전역 상태로 교체 예정
+  const isLoggedIn = false; // TODO: 전역 상태로 교체 예정
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoggedIn ? (
-          <Stack.Screen name="MainTab" component={DrawerNavigator} />
+          <Stack.Screen name="Main" component={DrawerNavigator} />
         ) : (
           <Stack.Screen name="Auth" component={AuthStackNavigator} />
         )}
