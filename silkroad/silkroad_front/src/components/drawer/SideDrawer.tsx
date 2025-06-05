@@ -19,7 +19,11 @@ export default function SideDrawer({ navigation }: DrawerContentComponentProps) 
 
       {/* 메뉴 항목 */}
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => console.log('마이페이지')}>
+        <TouchableOpacity style={styles.menuItem} 
+        onPress={() => {
+          navigation.closeDrawer(); 
+          navigation.navigate('MainTab', { screen: 'MyPage' });
+        }}>
           <Text style={styles.menuText}>마이페이지</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => console.log('채팅 목록')}>
