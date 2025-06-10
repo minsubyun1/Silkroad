@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/upload")
@@ -19,7 +21,8 @@ public class UploadController {
 
     @PostMapping("/profile-image")
     public ResponseEntity<ApiResponse<String>> uploadProfileImage(@RequestParam("file") MultipartFile file) {
-        fileUploadService.upload(file, "profile");
-        return ResponseEntity.ok(new ApiResponse<>(true, "이미지 업로드 완료", null));
+        // ✅ 단일 파일을 리스트로 감싸기
+        String imageUrl = fileUploadService.upload(Collections.singletonList(file), "profile").get(0);
+        return ResponseEntity.ok(new ApiResponse<>(true, "이미지 업로드 완료", imageUrl));
     }
 }

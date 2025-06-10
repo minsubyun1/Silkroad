@@ -30,7 +30,7 @@ public class SaleHistoryService {
                         p.getId(),
                         p.getTitle(),
                         p.getPrice(),
-                        p.getImageUrl(),
+                        p.getImages().isEmpty() ? null : p.getImages().get(0).getImageUrl(),
                         p.getBookmarkCount(),
                         p.isSold(),
                         p.getCreatedAt()

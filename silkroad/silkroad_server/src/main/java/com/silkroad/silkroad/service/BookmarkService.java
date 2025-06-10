@@ -68,7 +68,7 @@ public class BookmarkService {
                         b.getProduct().getId(),
                         b.getProduct().getTitle(),
                         b.getProduct().getPrice(),
-                        b.getProduct().getImageUrl(),
+                        b.getProduct().getImages().isEmpty() ? null : b.getProduct().getImages().get(0).getImageUrl(),
                         b.getProduct().isSold(),
                         b.getCreatedAt()
                 ))
