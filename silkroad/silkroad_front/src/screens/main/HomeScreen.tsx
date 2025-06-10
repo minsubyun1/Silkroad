@@ -1,8 +1,8 @@
 import React from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
-import HomeHeader from '@/src/components/home/HomeHeader';
-import MainProductList from '@/src/components/home/MainProductList';
-import BottomBanner from '@/src/components/home/BottomBanner';
+import HomeHeader from '@/src/screens/main/components/HomeHeader';
+import MainProductList from '@/src/screens/main/components/MainProductList';
+import BottomBanner from '@/src/screens/main/components/BottomBanner';
 
 export default function HomeScreen() {
   return (

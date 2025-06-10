@@ -9,9 +9,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MyPageStackParamList } from '@/src/navigation/MyPageStackNavigator';
 
 export default function MyPageScreen() {
   const navigation = useNavigation();
+  const mypageNavigation = useNavigation<NativeStackNavigationProp<MyPageStackParamList>>();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,20 +40,20 @@ export default function MyPageScreen() {
           <Text style={styles.name}>윤브라보</Text>
           <Text style={styles.location}>신길동</Text>
         </View>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity style={styles.editButton} onPress={() => mypageNavigation.navigate('ProfileEdit')}>
           <Text style={styles.editButtonText}>프로필 수정</Text>
         </TouchableOpacity>
       </View>
 
       {/* 메뉴 버튼들 */}
       <View style={styles.menuSection}>
-        <TouchableOpacity style={styles.menuButton}>
+        <TouchableOpacity style={styles.menuButton} onPress={() => mypageNavigation.navigate('SaleHistory')}>
           <Text style={styles.menuText}>판매 내역 보기</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuButton}>
+        <TouchableOpacity style={styles.menuButton}  onPress={() => mypageNavigation.navigate('Wishlist')}>
           <Text style={styles.menuText}>찜 목록 보기</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuButton}>
+        <TouchableOpacity style={styles.menuButton}  onPress={() => mypageNavigation.navigate('ChatList')}>
           <Text style={styles.menuText}>채팅 목록 보기</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuButton}>

@@ -22,7 +22,12 @@ export default function SideDrawer({ navigation }: DrawerContentComponentProps) 
         <TouchableOpacity style={styles.menuItem} 
         onPress={() => {
           navigation.closeDrawer(); 
-          navigation.navigate('MainTab', { screen: 'MyPage' });
+          navigation.navigate('MainTab', {
+            screen: 'MyPageTab', // 탭 이름
+            params: {
+              screen: 'MyPage', // 스택 안의 화면
+            },
+          });
         }}>
           <Text style={styles.menuText}>마이페이지</Text>
         </TouchableOpacity>
