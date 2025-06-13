@@ -13,6 +13,7 @@ import com.silkroad.silkroad.dto.product.ProductUpdateRequest;
 import com.silkroad.silkroad.repository.OrderRepository;
 import com.silkroad.silkroad.repository.ProductRepository;
 import com.silkroad.silkroad.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class ProductService {
     private final FileUploadService fileUploadService;
 
     @Transactional
-    public void registerProduct(String username, ProductRegisterRequest request){
+    public void registerProduct(String username, ProductRegisterRequest request, HttpServletRequest httpRequest){
         User seller = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("판매자 정보를 찾을 수 없습니다."));
 
@@ -47,7 +48,7 @@ public class ProductService {
                         .build();
 
         // 이미지 업로드 및 매핑
-        List<String> imageUrls = fileUploadService.upload(request.getImageFiles(), "products");
+        List<String> imageUrls = fileUploadService.upload(request.getImageFiles(), "products", httpRequest);
         List<ProductImage> productImages = imageUrls.stream()
                 .map(url -> new ProductImage(url, product))
                 .collect(Collectors.toList());
@@ -56,7 +57,6 @@ public class ProductService {
 
         productRepository.save(product); // cascade 덕분에 이미지도 함께 저장됨
 
-        productRepository.save(product);
     }
 
     @Transactional(readOnly = true)

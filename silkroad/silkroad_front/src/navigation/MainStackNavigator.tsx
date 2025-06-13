@@ -3,7 +3,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '@/src/screens/main/HomeScreen';
 import ProductDetailScreen from '@/src/screens/main/ProductDetailScreen';
-import ProductRegisterScreen from '@/src/screens/ProductRegisterScreen';
+import ProductRegisterScreen from '@/src/screens/main/ProductRegisterScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
 
 export type MainStackParamList = {

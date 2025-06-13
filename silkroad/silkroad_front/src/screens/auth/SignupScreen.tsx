@@ -4,6 +4,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { uploadProfileImage } from '@/src/api/upload';
+import { singup } from '@/src/api/auth';
+import { CommonActions } from '@react-navigation/native';
 
 export default function SignupScreen() {
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -34,15 +37,54 @@ export default function SignupScreen() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
   if (password !== confirmPassword) {
     Alert.alert('비밀번호 불일치', '비밀번호가 일치하지 않습니다.');
     return;
   }
 
-  Alert.alert('회원가입 완료!');
-  rootNavigation.navigate('Main');  // 또는 'Home' 등, RootNavigator 기준 이름
-  };
+  if(!profileImage) {
+    Alert.alert('프로필 이미지 누락', '프로필 이미지를 선택해주세요.');
+    return;
+  }
+
+  try {
+    const uploadedUrl = await uploadProfileImage({
+      uri: profileImage,
+      name: 'profile.jpg',
+      type: 'image/jpeg',
+    });
+
+    console.log('업로드된 이미지 URL:', uploadedUrl);
+
+    await singup({
+      username,
+      password,
+      name,
+      location: region,
+      profileImageUrl: uploadedUrl,
+    });
+
+    console.log('회원가입 요청 바디:',{
+      username,
+      password,
+      name,
+      location: region,
+      profileImage: uploadedUrl,
+    });
+
+    Alert.alert('회원가입 완료!');
+    rootNavigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Welcome'}],
+      })
+    );
+  } catch (err) {
+    console.log(err);
+    Alert.alert('회원가입 실패', '입력값 또는 이미지 업로드를 확인해주세요.')
+  }
+};
   return (
     <ScrollView style={styles.container}>
 

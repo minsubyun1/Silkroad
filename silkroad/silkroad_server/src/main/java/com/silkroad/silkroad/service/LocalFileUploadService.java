@@ -1,5 +1,7 @@
 package com.silkroad.silkroad.service;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,15 +16,15 @@ public class LocalFileUploadService implements FileUploadService{
     private static final String BASE_PATH = "src/main/resources/static/uploads/";
 
     @Override
-    public List<String> upload(List<MultipartFile> files, String folder) {
+    public List<String> upload(List<MultipartFile> files, String folder, HttpServletRequest request) {
         List<String> uploadedUrls = new ArrayList<>();
         for (MultipartFile file : files) {
-            uploadedUrls.add(uploadSingle(file, folder));
+            uploadedUrls.add(uploadSingle(file, folder, request));
         }
         return uploadedUrls;
     }
 
-    private String uploadSingle(MultipartFile file, String folder) {
+    private String uploadSingle(MultipartFile file, String folder, HttpServletRequest request) {
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String savedName = UUID.randomUUID() + extension;
@@ -40,6 +42,8 @@ public class LocalFileUploadService implements FileUploadService{
             throw new RuntimeException("파일 저장 실패", e);
         }
 
-        return "/uploads/" + folder + "/" + savedName;
+        String host = request.getServerName();
+        int port = request.getServerPort();
+        return "http://" + host + ":" + port + "/uploads/" + folder + "/" + savedName;
     }
 }

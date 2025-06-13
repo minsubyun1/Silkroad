@@ -13,10 +13,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const dummyData = [
-  { id: '1', title: '나이키 에어포스', price: '100,000원', image: require('../../../assets/images/shoes.png'), likes: 12, date: '3일 전' },
-  { id: '2', title: '아이묭 내한 티켓', price: '250,000원', image: require('../../../assets/images/ticket.png'), likes: 197, date: '1주일 전' },
-  { id: '3', title: '맥북 프로', price: '1,500,000원', image: require('../../../assets/images/macbook.png'), likes: 2, date: '2일 전' },
-  { id: '4', title: '베켄바우어 트랙탑', price: '120,000원', image: require('../../../assets/images/cloth.png'), likes: 98, date: '4일 전' },
+  { id: '1', title: '나이키 에어포스', price: '100,000원', image: require('../../../../assets/images/shoes.png'), likes: 12, date: '3일 전' },
+  { id: '2', title: '아이묭 내한 티켓', price: '250,000원', image: require('../../../../assets/images/ticket.png'), likes: 197, date: '1주일 전' },
+  { id: '3', title: '맥북 프로', price: '1,500,000원', image: require('../../../../assets/images/macbook.png'), likes: 2, date: '2일 전' },
+  { id: '4', title: '베켄바우어 트랙탑', price: '120,000원', image: require('../../../../assets/images/cloth.png'), likes: 98, date: '4일 전' },
 ];
 
 

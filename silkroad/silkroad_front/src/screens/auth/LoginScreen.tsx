@@ -1,10 +1,12 @@
+import { loginApi } from '@/src/api/auth';
+import { Alert } from 'react-native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/types';
 import { RootStackParamList } from '../../navigation/types';
-
+import { useAuth } from '@/src/context/AuthContext';
 
 
 
@@ -12,8 +14,21 @@ export default function LoginScreen() {
     const navigation = useNavigation();
     const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const authNavigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const { login } = useAuth();
+
+
+    const handleLogin = async () => {
+      try {
+        const res = await loginApi({ username, password }); // 실제 로그인 API
+        await login(res.accessToken, res.refreshToken, res.username); // ✅ Context 기반 로그인
+        Alert.alert('로그인 성공!');
+      } catch (err) {
+        Alert.alert('로그인 실패', '아이디 또는 비밀번호를 확인해주세요.');
+      }
+    };
 
     return (
         <View style={styles.container}>
@@ -29,8 +44,8 @@ export default function LoginScreen() {
             <TextInput 
                 style={styles.input}
                 placeholder='예: silkroad123'
-                value={email}
-                onChangeText={setEmail}
+                value={username}
+                onChangeText={setUsername}
             />
             <Text style={styles.label}>비밀번호</Text>
             <TextInput 
@@ -43,12 +58,7 @@ export default function LoginScreen() {
 
             <TouchableOpacity 
               style={styles.loginButton}
-              onPress={() => {
-              rootNavigation.reset({
-                index: 0,
-                routes: [{ name: 'Main' }],
-              });
-            }}
+              onPress={handleLogin}
             >
                 <Text style={styles.loginButtonText}>로그인</Text>
             </TouchableOpacity>
