@@ -34,6 +34,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 20,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   leftSection: {
     flex: 1,

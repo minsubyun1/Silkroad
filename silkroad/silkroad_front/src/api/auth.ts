@@ -23,3 +23,20 @@ export const getMyProfile = async () => {
     const response = await instance.get('/users/me');
     return response.data.data;
 }
+
+export const updateMyProfile = async ({
+  name,
+  location,
+  profileImageUrl,
+}: {
+  name: string;
+  location: string;
+  profileImageUrl: string;
+}) => {
+  const response = await instance.patch('/users/me', {
+    name,
+    location,
+    profileImageUrl,
+  });
+  return response.data;
+};

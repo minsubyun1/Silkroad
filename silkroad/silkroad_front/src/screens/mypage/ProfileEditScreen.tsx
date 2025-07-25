@@ -5,11 +5,15 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import ModalSelector from 'react-native-modal-selector';
 import { useNavigation } from '@react-navigation/native';
+import { updateMyProfile } from '@/src/api/auth';
+import { uploadProfileImage } from '@/src/api/upload';
 
 export default function ProfileEditScreen() {
   const [nickname, setNickname] = useState('');
   const [region, setRegion] = useState('강남구'); // 기본값
   const [profileImage, setProfileImage] = useState('https://example.com/profile.png'); // 기존 프로필 이미지 URL
+
+  
 
   const navigation = useNavigation();
   const pickImage = async () => {
@@ -30,10 +34,29 @@ export default function ProfileEditScreen() {
     }
   };
 
-  const handleSave = () => {
-    Alert.alert('저장 완료', '프로필이 수정되었습니다.');
+  const handleSave = async () => {
+    try {
+      let uploadedUrl = profileImage;
 
-    navigation.goBack();
+      if (profileImage && !profileImage.startsWith('http')) {
+        const res = await uploadProfileImage({
+          uri: profileImage,
+          name: 'profile.jpg',
+          type: 'image/jpeg',
+        });
+        uploadedUrl = res;
+      }
+
+      await updateMyProfile({
+        name: nickname,
+        location: region,
+        profileImageUrl: uploadedUrl,
+      });
+      Alert.alert('저장 완료', '프로필이 수정되었습니다.');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('오류', '프로필 수정에 실패했습니다.');
+    }
   };
 
   const regionOptions = [

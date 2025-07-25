@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,60 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MyPageStackParamList } from '@/src/navigation/MyPageStackNavigator';
+import { getMyProfile } from '@/src/api/auth';
+import LoadingScreen from '../common/LoadingScreen';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function MyPageScreen() {
   const navigation = useNavigation();
   const mypageNavigation = useNavigation<NativeStackNavigationProp<MyPageStackParamList>>();
+
+  const [profile, setProfile] = useState<{
+    username: string;
+    name: string;
+    location: string;
+    profileImageUrl: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+      const fetchProfile = async () => {
+      try {
+        const data = await getMyProfile();
+        setProfile(data);
+      } catch (error) {
+        setProfile(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+
+    return () => {
+      isActive = false;
+    };
+  }, [])
+);
+
+  if (loading) {
+     return <LoadingScreen />;
+  }
+
+  if (!profile) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={{ margin: 20 }}>프로필 정보를 불러올 수 없습니다.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,22 +68,26 @@ export default function MyPageScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={24} color="#222" style={{marginLeft:10}} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>윤브라보</Text>
+        <Text style={styles.headerTitle}>{profile.name}</Text>
         <View style={{ width: 34 }} /> 
       </View>
 
       {/* 인삿말 */}
-      <Text style={styles.greeting}>윤브라보님의 실크로드</Text>
+      <Text style={styles.greeting}>{profile.name}님의 실크로드</Text>
 
       {/* 프로필 카드 */}
       <View style={styles.profileCard}>
         <Image
-          source={require('../../../assets/images/seller.png')}
+          source={
+            profile.profileImageUrl
+              ? { uri: profile.profileImageUrl }
+              : require('../../../assets/images/seller.png')
+          }
           style={styles.avatar}
         />
         <View style={{ flex: 1 }}>
-          <Text style={styles.name}>윤브라보</Text>
-          <Text style={styles.location}>신길동</Text>
+          <Text style={styles.name}>{profile.name}</Text>
+          <Text style={styles.location}>{profile.location}</Text>
         </View>
         <TouchableOpacity style={styles.editButton} onPress={() => mypageNavigation.navigate('ProfileEdit')}>
           <Text style={styles.editButtonText}>프로필 수정</Text>

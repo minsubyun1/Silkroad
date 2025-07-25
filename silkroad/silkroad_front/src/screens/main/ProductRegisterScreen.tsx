@@ -75,7 +75,7 @@ export default function ProductRegisterScreen() {
     }
   }
 
-  return (
+  return ( 
     <ScrollView style={styles.container}>
       <View style={styles.header}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
