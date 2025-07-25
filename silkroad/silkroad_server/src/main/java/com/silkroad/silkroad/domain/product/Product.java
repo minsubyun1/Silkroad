@@ -47,9 +47,11 @@ public class Product {
 
     @Setter
     @Column(nullable = false)
+    @Builder.Default
     private int bookmarkCount = 0; // 찜 수
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
 
     @CreatedDate
