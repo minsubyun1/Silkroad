@@ -1,10 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MyPageScreen from '../screens/main/MyPageScreen';
-import ProfileEditScreen from '../screens/main/ProfileEditScreen';
-import WishlistScreen from '../screens/main/WishlistScreen';
-import SalesHistoryScreen from '../screens/main/SaleHistoryScreen';
-import ChatListScreen from '../screens/main/ChatListScreen';
+import MyPageScreen from '../screens/mypage/MyPageScreen';
+import ProfileEditScreen from '../screens/mypage/ProfileEditScreen';
+import WishlistScreen from '../screens/mypage/WishlistScreen';
+import SalesHistoryScreen from '../screens/mypage/SaleHistoryScreen';
+import ChatListScreen from '../screens/chat/ChatListScreen';
 
 export type MyPageStackParamList = {
     MyPage: undefined;

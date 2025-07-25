@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 
 const productImages = [
-  require('../../../assets/images/shoes.png'),
-  require('../../../assets/images/shoes.png'),
-  require('../../../assets/images/shoes.png'),
-  require('../../../assets/images/shoes.png'),
+  require('../../../../assets/images/shoes.png'),
+  require('../../../../assets/images/shoes.png'),
+  require('../../../../assets/images/shoes.png'),
+  require('../../../../assets/images/shoes.png'),
 ];
 
 export default function ProductDetailContent() {
@@ -73,7 +73,7 @@ export default function ProductDetailContent() {
         </Text>
 
         <View style={styles.sellerInfo}>
-          <Image source={require('../../../assets/images/seller.png')} style={styles.avatar} />
+          <Image source={require('../../../../assets/images/seller.png')} style={styles.avatar} />
           <View>
             <Text style={styles.sellerName}>라민 야말</Text>
             <Text style={styles.sellerLocation}>신길동</Text>

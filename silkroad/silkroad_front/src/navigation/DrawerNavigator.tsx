@@ -1,7 +1,7 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MainTabNavigator from './MainTabNavigator';
-import SideDrawer from '../components/drawer/SideDrawer';
+import SideDrawer from '../screens/drawer/SideDrawer';
 
 const Drawer = createDrawerNavigator();
 

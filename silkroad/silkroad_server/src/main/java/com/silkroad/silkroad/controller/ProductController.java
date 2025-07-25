@@ -7,6 +7,7 @@ import com.silkroad.silkroad.dto.product.ProductRegisterRequest;
 import com.silkroad.silkroad.dto.product.ProductSummaryResponse;
 import com.silkroad.silkroad.dto.product.ProductUpdateRequest;
 import com.silkroad.silkroad.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,8 +28,8 @@ public class ProductController {
 
     @Operation(summary = "상품 등록", description = "상품 정보를 입력하여 새 상품을 등록합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> registerProduct(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute ProductRegisterRequest request){
-        productService.registerProduct(userDetails.getUsername(), request);
+    public ResponseEntity<ApiResponse<String>> registerProduct(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute ProductRegisterRequest request, HttpServletRequest HttpRequest){
+        productService.registerProduct(userDetails.getUsername(), request, HttpRequest);
         return ResponseEntity.ok(new ApiResponse<>(true, "상품이 성공적으로 등록되었습니다.", null));
     }
 

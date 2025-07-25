@@ -42,3 +42,4 @@ out/
 *.iws
 workspace.xml
 vcs.xml
+Dockerfile

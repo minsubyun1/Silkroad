@@ -6,11 +6,12 @@ import * as ImagePicker from 'expo-image-picker';
 import ModalSelector from 'react-native-modal-selector';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { registerProduct } from '@/src/api/product';
 
 export default function ProductRegisterScreen() {
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('전자기기');
+  const [selectedCategory, setSelectedCategory] = useState('DIGITAL');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const navigation = useNavigation();
@@ -36,11 +37,43 @@ export default function ProductRegisterScreen() {
   };
 
   const categoryOptions = [
-    { key: '전자기기', label: '전자기기' },
-    { key: '의류', label: '의류' },
-    { key: '화장품', label: '화장품' },
-    { key: '도서', label: '도서' },
-  ];
+  { key: 'DIGITAL', label: '디지털 기기' },
+  { key: 'FASHION', label: '의류' },
+  { key: 'BEAUTY', label: '뷰티' },
+  { key: 'SPORTS', label: '스포츠' },
+  { key: 'ETC', label: '기타' },
+];
+
+  const handleSubmit = async() => {
+    if (!title || !price || !description || images.length === 0) {
+      Alert.alert('입력 오류', '모든 항목을 입력해주세요.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('price', price);
+    formData.append('description', description);
+    formData.append('category', selectedCategory);
+
+    images.forEach((uri, index) => {
+      const fileName = uri.split('/').pop() || `image${index}.jpg`;
+      formData.append('imageFiles', {
+        uri,
+        type: 'image/jpeg',
+        name: fileName,
+      } as any);
+    });
+
+    try {
+      await registerProduct(formData);
+      Alert.alert('등록 성공', '상품이 등록되었습니다.');
+      navigation.goBack();
+    } catch (err) {
+      console.error(err);
+      Alert.alert('등록 실패', '다시 시도해주세요.');
+    }
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -73,18 +106,15 @@ export default function ProductRegisterScreen() {
       <ModalSelector
         data={categoryOptions}
         initValue="카테고리 선택"
-        onChange={(option) => setSelectedCategory(option.label)}
+        onChange={(option) => setSelectedCategory(option.key)}
         cancelText="취소"
-        accessible={false}
-        
       >
         <View style={styles.selector}>
-          <Text style={styles.selectorText}>{selectedCategory}</Text> 
+          <Text style={styles.selectorText}>
+            {categoryOptions.find(c => c.key === selectedCategory)?.label ?? '카테고리 선택'}
+          </Text>
           <Ionicons name="chevron-down" size={20} color="#999" />
         </View>
-            {/* ⚠️ ModalSelector의 children 경고 무시 
-      모달 동작을 위해 <View> 구조 유지, 앱에는 영향 없음*/}
-        
       </ModalSelector>
 
 
@@ -110,7 +140,7 @@ export default function ProductRegisterScreen() {
         ))}
       </ScrollView>
 
-      <TouchableOpacity style={styles.submitButton} onPress={() => Alert.alert('등록 완료!')}>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitText}>작성 완료</Text>
       </TouchableOpacity>
     </ScrollView>

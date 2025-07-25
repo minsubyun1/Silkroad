@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { use } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { logout } from '@/src/api/logout';
+import { useAuth } from '@/src/context/AuthContext';
 
 export default function SideDrawer({ navigation }: DrawerContentComponentProps) {
+  
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+  
   return (
     <View style={styles.container}>
       {/* 헤더: 로고 + 닫기 버튼 */}
@@ -37,7 +46,7 @@ export default function SideDrawer({ navigation }: DrawerContentComponentProps) 
         <TouchableOpacity style={styles.menuItem} onPress={() => console.log('AI 라밀과 대화')}>
           <Text style={styles.menuText}>AI 라밀과 대화</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => console.log('로그아웃')}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
           <Text style={styles.menuText}>로그아웃</Text>
         </TouchableOpacity>
       </View>
