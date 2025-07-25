@@ -2,11 +2,11 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.219.102:3002';
+const BASE_URL = 'https://silkroadapp.shop';
 
 const instance = axios.create({
    baseURL: BASE_URL,
-   timeout: 15000,
+   timeout: 30000,
 });
 
 // 요청 인터셉터 - accessToken 자동 부착

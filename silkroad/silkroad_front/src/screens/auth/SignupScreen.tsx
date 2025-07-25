@@ -28,7 +28,7 @@ export default function SignupScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.7,
+      quality: 0.3,
       allowsMultipleSelection: false,
     });
 
