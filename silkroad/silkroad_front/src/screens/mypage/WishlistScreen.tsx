@@ -1,45 +1,68 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import ProductItemCard from '@/src/screens/mypage/components/ProductItemCard';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { fetchMyBookmarks } from '@/src/api/bookmark';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
+
 
 export default function WishlistScreen() {
   const navigation = useNavigation();
-  const dummyData = [
-    {
-      id: '1',
-      title: '아이몽 내한 티켓 5/12',
-      price: '₩250,000',
-      date: '2024.04.10',
-      image: require('../../../assets/images/ticket.png'),
-      status: '판매 중',
-    },
-  ];
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const getRelativeDate = (dateString: string) => {
+      return dayjs(dateString).fromNow();
+  };
+
+  useEffect(() => {
+    const loadBookmarks = async () => {
+      try {
+        const res = await fetchMyBookmarks();
+        setBookmarks(res);
+      } catch (err) {
+        console.error('찜 목록 조회 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBookmarks();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color="#222"  />
+          <Ionicons name="chevron-back" size={24} color="#222" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>마이페이지</Text>
-        <View style={{ width: 34 }} /> 
+        <View style={{ width: 34 }} />
       </View>
+
       <Text style={styles.title}>나의 찜 목록</Text>
-      {dummyData.map((item) => (
+
+      {bookmarks.map((item) => (
         <ProductItemCard
-          key={item.id}
-          image={item.image}
+          key={item.productId}
+          image={{ uri: item.imageUrl }}
           title={item.title}
-          price={item.price}
+          price={`${Number(item.price).toLocaleString()}원`}
           dateLabel="찜한 날짜"
-          date={item.date}
-          status={item.status as '판매 중' | '판매 완료'}
+          date={item.bookmarkedAt}
+          status={item.isSold ? '판매 완료' : '판매 중'}
           showCancelButton
-          onCancelPress={() => console.log('찜 취소')}
+          onCancelPress={() => console.log('찜 취소 기능 필요')}
         />
-        
       ))}
     </ScrollView>
   );

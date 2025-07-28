@@ -4,12 +4,25 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-export default function ProductChatBanner() {
+interface Props {
+  price: number;
+  isBookmarked: boolean;
+  onToggleBookmark: () => void;
+}
+
+export default function ProductChatBanner({
+  price,
+  isBookmarked,
+  onToggleBookmark
+}: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.likes}>♡</Text>
-      <Text style={styles.price}>100,000원</Text>
+      <TouchableOpacity onPress={onToggleBookmark}>
+        <Text style={styles.likes}>{isBookmarked ? '♥' : '♡'}</Text>
+      </TouchableOpacity>
+      <Text style={styles.price}>{Number(price).toLocaleString()}원</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChatDetail')}>
         <Text style={styles.buttonText}>거래 채팅하기</Text>
       </TouchableOpacity>
@@ -29,6 +42,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   likes: {
+    color:'red',
     fontSize:20,
   },
   price: {
