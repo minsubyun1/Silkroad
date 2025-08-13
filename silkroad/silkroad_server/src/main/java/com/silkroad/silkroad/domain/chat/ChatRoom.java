@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "chat_room", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_product_buyer", columnNames = {"product_id", "buyer_id"})
+})
 @Getter
 @NoArgsConstructor
 public class ChatRoom {
