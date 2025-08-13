@@ -11,13 +11,17 @@ import com.silkroad.silkroad.dto.chat.ChatRoomDetailResponse;
 import com.silkroad.silkroad.dto.chat.ChatRoomResponse;
 import com.silkroad.silkroad.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -101,16 +105,32 @@ public class ChatService {
     public Long createChatRoom(String username, Long productId) {
         User buyer = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-        User seller = product.getUser();
 
-        return chatRoomRepository.findByProductAndBuyer(product, buyer)
+        if (product.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("본인 상품에는 채팅방을 생성할 수 없습니다.");
+        }
+
+        try {
+            return chatRoomRepository.findByProductIdAndBuyerId(product.getId(), buyer.getId())
+                    .map(ChatRoom::getId)
+                    .orElseGet(() -> {
+                        ChatRoom room = new ChatRoom(product, buyer, product.getUser());
+                        return chatRoomRepository.save(room).getId();
+                    });
+        } catch (DataIntegrityViolationException e) {
+            log.warn("중복 방 생성 시도 - 다시 조회 시도");
+            return getExistingChatRoomId(product.getId(), buyer.getId()); // ⬅ 트랜잭션 분리
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Long getExistingChatRoomId(Long productId, Long buyerId) {
+        return chatRoomRepository.findByProductIdAndBuyerId(productId, buyerId)
                 .map(ChatRoom::getId)
-                .orElseGet(() -> {
-                    ChatRoom room = new ChatRoom(product, buyer, seller);
-                    return chatRoomRepository.save(room).getId();
-                });
+                .orElseThrow(() -> new RuntimeException("중복 생성 후 재조회 실패"));
     }
 
     // 메세지 생성(전송)

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,11 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { fetchBookmarkStatus, toggleBookmark } from '@/src/api/bookmark';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
@@ -18,9 +22,17 @@ dayjs.locale('ko');
 
 interface Props {
   product: any;
+  isBookmarked: boolean;
+  bookmarkCount: number;
+  onToggleBookmark: () => void;
 }
 
-export default function ProductDetailContent({ product }: Props) {
+export default function ProductDetailContent({
+  product,
+  isBookmarked,
+  bookmarkCount,
+  onToggleBookmark,
+}: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const screenWidth = Dimensions.get('window').width;
@@ -36,7 +48,6 @@ export default function ProductDetailContent({ product }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* 이미지 캐러셀 */}
       <View style={styles.carouselContainer}>
         <ScrollView
           horizontal
@@ -54,27 +65,32 @@ export default function ProductDetailContent({ product }: Props) {
             <Image source={require('../../../../assets/images/shoes.png')} style={styles.image} />
           )}
         </ScrollView>
-        {/* 인디케이터 점 */}
         <View style={styles.dotsContainer}>
-          {(product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls : [1]).map(
-            (_: any, idx: number) => (
-              <View
-                key={idx}
-                style={[styles.dot, currentIndex === idx && styles.activeDot]}
-              />
-            )
-          )}
+          {(product.imageUrls?.length ? product.imageUrls : [1]).map((_: string, idx:number) => (
+            <View
+              key={idx}
+              style={[styles.dot, currentIndex === idx && styles.activeDot]}
+            />
+          ))}
         </View>
       </View>
 
-      {/* 상품 상세 설명 영역 */}
       <View style={styles.metaSection}>
         <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.price}>{Number(product.price).toLocaleString()}원</Text>
-        <Text style={styles.date}>
-          {getRelativeDate(product.createdAt)} · ♡ {product.bookmarkCount}
+
+        <View style={styles.dateContainer}>
+          <Text style={styles.date}>{getRelativeDate(product.createdAt)} ·</Text>
+          <TouchableOpacity onPress={onToggleBookmark}>
+            <Text style={styles.heart}>
+              {isBookmarked ? '♥' : '♡'} {bookmarkCount}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.description}>
+          {product.description || '상품 설명이 없습니다.'}
         </Text>
-        <Text style={styles.description}>{product.description || '상품 설명이 없습니다.'}</Text>
 
         <View style={styles.sellerInfo}>
           <Image
@@ -89,7 +105,9 @@ export default function ProductDetailContent({ product }: Props) {
             <Text style={styles.sellerName}>
               {product.sellerName || product.sellerUsername || '판매자'}
             </Text>
-            <Text style={styles.sellerLocation}>{product.sellerLocation || '위치 정보 없음'}</Text>
+            <Text style={styles.sellerLocation}>
+              {product.sellerLocation || '위치 정보 없음'}
+            </Text>
           </View>
         </View>
       </View>
@@ -97,11 +115,13 @@ export default function ProductDetailContent({ product }: Props) {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 120,
     backgroundColor: '#fff',
   },
+  
   carouselContainer: {
     position: 'relative',
   },
@@ -142,10 +162,19 @@ const styles = StyleSheet.create({
     color: '#222',
     marginTop: 4,
   },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
   date: {
     fontSize: 12,
     color: '#999',
-    marginVertical: 4,
+  },
+  heart: {
+    fontSize: 12,
+    color: 'red',
+    marginLeft: 4,
   },
   description: {
     fontSize: 16,

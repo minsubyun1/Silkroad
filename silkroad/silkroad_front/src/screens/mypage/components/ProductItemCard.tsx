@@ -1,5 +1,11 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
 
 interface ProductItemCardProps {
     image: any;
@@ -26,6 +32,11 @@ export default function ProductItemCard({
 } : ProductItemCardProps) {
     const isSold = status === '판매 완료';
 
+    const getRelativeDate = (dateString: string) => {
+          return dayjs(dateString).fromNow();
+      };
+    
+
     return (
         <View style={styles.card}>
             <Image source={image} style={styles.image} />
@@ -40,7 +51,7 @@ export default function ProductItemCard({
                 {likes !== undefined && (
                 <Text style={styles.likes}>♡ {likes}</Text>
                 )}
-                <Text style={styles.date}>{`${dateLabel}: ${date}`}</Text>
+                <Text style={styles.date}>{getRelativeDate(date)}</Text>
                 {showCancelButton && (
                 <TouchableOpacity style={styles.cancelButton} onPress={onCancelPress}>
                     <Text style={styles.cancelText}>취소하기</Text>

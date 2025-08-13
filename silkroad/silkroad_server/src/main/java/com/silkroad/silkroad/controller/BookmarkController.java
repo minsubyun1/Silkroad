@@ -24,10 +24,10 @@ public class BookmarkController {
 
     @Operation(summary = "찜 등록", description = "찜 여부에 따라, 찜 등록 및 해제를 제공합니다.")
     @PostMapping("/{productId}/toggle")
-    public ResponseEntity<ApiResponse<String>> toggleBookmark(@PathVariable("productId") Long productId,
+    public ResponseEntity<ApiResponse<Boolean>> toggleBookmark(@PathVariable("productId") Long productId,
                                                       @AuthenticationPrincipal UserDetails userDetails){
-        bookmarkService.toggleBookmark(userDetails.getUsername(), productId);
-        return ResponseEntity.ok(new ApiResponse<>(true, "찜 상태가 변경 완료", null));
+        boolean isBookmarked = bookmarkService.toggleBookmark(userDetails.getUsername(), productId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "찜 상태가 변경 완료", isBookmarked));
     }
 
     @Operation(summary = "찜 여부", description = "해당 상품을 찜 했는지 확입합니다.")
