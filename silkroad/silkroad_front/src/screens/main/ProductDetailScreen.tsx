@@ -33,7 +33,8 @@ export default function ProductDetailScreen() {
         setBookmarkCount(res.data.bookmarkCount);
 
         const bookmarkRes = await fetchBookmarkStatus(id);
-        setIsBookmarked(bookmarkRes.data.isBookmarked);
+        console.log("찜 여부 응답:", bookmarkRes.data);
+        setIsBookmarked(bookmarkRes.data.bookmarked);
 
       } catch (err) {
         console.error(err);
@@ -83,7 +84,8 @@ export default function ProductDetailScreen() {
           onToggleBookmark = {handleToggleBookmark}
         />
       </ScrollView>
-      <ProductChatBanner 
+      <ProductChatBanner
+        productId={product.id} 
         price = {product.price}
         isBookmarked={isBookmarked}
         onToggleBookmark = {handleToggleBookmark}

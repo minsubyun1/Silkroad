@@ -5,12 +5,14 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 interface Props {
+  productId: number;
   price: number;
   isBookmarked: boolean;
   onToggleBookmark: () => void;
 }
 
 export default function ProductChatBanner({
+  productId,
   price,
   isBookmarked,
   onToggleBookmark
@@ -23,7 +25,7 @@ export default function ProductChatBanner({
         <Text style={styles.likes}>{isBookmarked ? '♥' : '♡'}</Text>
       </TouchableOpacity>
       <Text style={styles.price}>{Number(price).toLocaleString()}원</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChatDetail')}>
+      <TouchableOpacity style={styles.button} onPress={() => {console.log('🔥 navigating to ChatDetail with productId:', productId); navigation.navigate('ChatDetail', {productId});} }>
         <Text style={styles.buttonText}>거래 채팅하기</Text>
       </TouchableOpacity>
     </View>
