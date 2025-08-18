@@ -7,6 +7,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { uploadProfileImage } from '@/src/api/upload';
 import { singup } from '@/src/api/auth';
 import { CommonActions } from '@react-navigation/native';
+import ModalSelector from 'react-native-modal-selector';
 
 export default function SignupScreen() {
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -16,8 +17,16 @@ export default function SignupScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [region, setRegion] = useState('');
-  const [address, setAddress] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const regionOptions = [
+    { key: '강남구', label: '강남구' },
+    { key: '서초구', label: '서초구' },
+    { key: '마포구', label: '마포구' },
+    { key: '영등포구', label: '영등포구' },
+    { key: '동작구', label: '동작구' },
+    { key: '관악구', label: '관악구' },
+  ];
 
   const pickProfileImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -38,6 +47,19 @@ export default function SignupScreen() {
   };
 
   const handleSubmit = async () => {
+  if (name.length > 10) {
+    Alert.alert('이름 오류', '이름은 10자 이하로 입력해주세요.');
+    return;
+  }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    Alert.alert(
+      '비밀번호 조건 불충족',
+      '비밀번호는 8자 이상이며, 영문 대소문자와 특수문자를 포함해야 합니다.'
+    );
+    return;
+  }
   if (password !== confirmPassword) {
     Alert.alert('비밀번호 불일치', '비밀번호가 일치하지 않습니다.');
     return;
@@ -121,20 +143,18 @@ export default function SignupScreen() {
       />
 
       <Text style={styles.label}>지역 선택</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="예: 강남구"
-        value={region}
-        onChangeText={setRegion}
-      />
-
-      <Text style={styles.label}>상세주소</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="예: 양녕로 22길 대박주택 104호"
-        value={address}
-        onChangeText={setAddress}
-      />
+      <ModalSelector
+              data={regionOptions}
+              initValue={region}
+              onChange={(option) => setRegion(option.label)}
+              cancelText="취소"
+              accessible={false}
+            >
+              <View style={styles.selector}>
+                <Text style={styles.selectorText}>{region}</Text>
+                <Text>▼</Text>
+              </View>
+      </ModalSelector>
 
       <Text style={styles.label}>프로필 이미지</Text>
       <TouchableOpacity onPress={pickProfileImage} style={styles.imagePicker}>
@@ -180,6 +200,22 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 7,
     fontWeight: 'bold',
+    color: '#222',
+  },
+  selector: {
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+    width: '100%',
+  },
+  selectorText: {
+    fontSize: 14,
     color: '#222',
   },
   imagePicker: {
