@@ -1,11 +1,25 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-
+import { getMyProfile } from '@/src/api/auth';
 export default function HomeHeader() {
   const navigation = useNavigation();
 
+  const [profile, setProfile] = useState<{
+      username: string;
+      name: string;
+      location: string;
+      profileImageUrl: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await getMyProfile();
+      setProfile(res);
+    };
+    fetchUser();
+  }, []);
   return (
     <View style={styles.headerContainer}>
       <Image
@@ -15,7 +29,7 @@ export default function HomeHeader() {
 
       <TouchableOpacity style={styles.locationContainer}>
         <Ionicons name="location-sharp" size={16} color="white" style={styles.locationIcon} />
-        <Text style={styles.locationText}>신길동</Text>
+        <Text style={styles.locationText}>{profile?.location}</Text>
         <Ionicons name="chevron-down" size={14} color="white" style={styles.chevron} />
       </TouchableOpacity>
 
