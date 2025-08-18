@@ -1,44 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { fetchChats, fetchSellChats, fetchBuyChats } from '../../api/chat';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
 
-const dummyChats = [
-  {
-    id: '1',
-    name: '킬리안 음바페',
-    message: '축구용품 싹 다 팝니다 진짜...',
-    time: '2일 전',
-    image: require('../../../assets/images/avatar1.png'),
-  },
-  {
-    id: '2',
-    name: '데클런 라이스',
-    message: '제 감아차기 보셨습니까 ㅋㅋ',
-    time: '4일 전',
-    image: require('../../../assets/images/avatar2.png'),
-  },
-  {
-    id: '3',
-    name: '김원훈',
-    message: '2만원에 거래 할래말래',
-    time: '10일 전',
-    image: require('../../../assets/images/avatar3.png'),
-  },
-  {
-    id: '4',
-    name: '윤브라보',
-    message: '유기농 오리 슬라이스 10만원에 살게요 제발..',
-    time: '14일 전',
-    image: require('../../../assets/images/avatar4.jpg'),
-  },
-  // 필요한 만큼 추가
-];
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
+
+const getRelativeDate = (dateString: string) => {
+  return dayjs(dateString).fromNow(); // ex: "3시간 전"
+};
+
+type ChatRoom = {
+  roomId: number;
+  opponentImageUrl: string;
+  opponentName: string;
+  lastMessage: string;
+  lastMessageTime: string;
+};
 
 export default function ChatListScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [selectedFilter, setSelectedFilter] = useState<'전체' | '판매' | '구매'>('전체');
+  const [chatList, setChatList] = useState<ChatRoom[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      let data: ChatRoom[] = [];
+      if (selectedFilter === '전체') {
+        data = await fetchChats();
+      } else if (selectedFilter === '판매') {
+        data = await fetchSellChats();
+      } else if (selectedFilter === '구매') {
+        data = await fetchBuyChats();
+      }
+      setChatList(data);
+    } catch (error) {
+      console.error('채팅 목록 불러오기 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedFilter]);
 
   return (
     <ScrollView style={styles.container}>
@@ -51,42 +62,55 @@ export default function ChatListScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* 카테고리 필터 */}
+      {/* 필터 버튼 */}
       <View style={styles.filterRow}>
         {['전체', '판매', '구매'].map((label) => (
-            <TouchableOpacity
+          <TouchableOpacity
             key={label}
             style={[
-                styles.filterButton,
-                selectedFilter === label && styles.filterButtonActive
+              styles.filterButton,
+              selectedFilter === label && styles.filterButtonActive
             ]}
             onPress={() => setSelectedFilter(label as '전체' | '판매' | '구매')}
-            >
+          >
             <Text
-                style={[
+              style={[
                 styles.filterText,
                 selectedFilter === label && styles.filterTextActive
-                ]}
+              ]}
             >
-                {label}
+              {label}
             </Text>
-            </TouchableOpacity>
-            ))}
-        </View>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-      {/* 채팅 목록 */}
-      {dummyChats.map((chat) => (
-        <TouchableOpacity key={chat.id} style={styles.chatItem}>
-          <Image source={chat.image} style={styles.avatar} />
-          <View style={styles.chatContent}>
-            <View style={styles.chatHeader}>
-              <Text style={styles.chatName}>{chat.name}</Text>
-              <Text style={styles.chatTime}>{chat.time}</Text>
-            </View>
-            <Text style={styles.chatMessage} numberOfLines={1}>{chat.message}</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      {loading ? (
+        <ActivityIndicator size="large" color="#888" style={{ marginTop: 30 }} />
+      ) : (
+        <>
+          {chatList.map((chat) => (
+            <TouchableOpacity
+              key={chat.roomId}
+              style={styles.chatItem}
+              onPress={() =>
+                navigation.navigate('ChatDetail', { roomId: chat.roomId })
+              }
+            >
+              <Image source={{ uri: chat.opponentImageUrl }} style={styles.avatar} />
+              <View style={styles.chatContent}>
+                <View style={styles.chatHeader}>
+                  <Text style={styles.chatName}>{chat.opponentName}</Text>
+                  <Text style={styles.chatTime}>{getRelativeDate(chat.lastMessageTime)}</Text>
+                </View>
+                <Text style={styles.chatMessage} numberOfLines={1}>
+                  {chat.lastMessage}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -98,7 +122,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   header: {
-    marginTop:10,
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -109,36 +133,32 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   filterRow: {
-  marginTop:15,
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  marginBottom: 16,
-  gap: 8,
-    },
-
-    filterButton: {
+    marginTop: 15,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 16,
+    gap: 8,
+  },
+  filterButton: {
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ccc',
     backgroundColor: '#fff',
-    },
-
-    filterButtonActive: {
+  },
+  filterButtonActive: {
     backgroundColor: '#625B52',
     borderColor: '#625B52',
-    },
-
-    filterText: {
+  },
+  filterText: {
     fontSize: 13,
     color: '#625B52',
     fontWeight: 'bold',
-    },
-
-    filterTextActive: {
+  },
+  filterTextActive: {
     color: '#fff',
-    },
+  },
   chatItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -157,7 +177,7 @@ const styles = StyleSheet.create({
   },
   chatHeader: {
     flexDirection: 'row',
-    marginTop:8,
+    marginTop: 8,
   },
   chatName: {
     fontSize: 14,
@@ -165,7 +185,7 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   chatTime: {
-    marginLeft:5,
+    marginLeft: 5,
     fontSize: 12,
     color: '#999',
   },

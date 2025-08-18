@@ -5,6 +5,7 @@ import ProfileEditScreen from '../screens/mypage/ProfileEditScreen';
 import WishlistScreen from '../screens/mypage/WishlistScreen';
 import SalesHistoryScreen from '../screens/mypage/SaleHistoryScreen';
 import ChatListScreen from '../screens/chat/ChatListScreen';
+import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
 
 export type MyPageStackParamList = {
     MyPage: undefined;
@@ -12,6 +13,7 @@ export type MyPageStackParamList = {
     Wishlist: undefined;
     SaleHistory: undefined;
     ChatList: undefined;
+    ChatDetail: undefined;
 }
 
 const Stack = createNativeStackNavigator<MyPageStackParamList>();
@@ -24,6 +26,7 @@ export default function MyPageStackNavigator() {
             <Stack.Screen name="Wishlist" component={WishlistScreen} />
             <Stack.Screen name="SaleHistory" component={SalesHistoryScreen} />
             <Stack.Screen name="ChatList" component={ChatListScreen} />
+            <Stack.Screen name="ChatDetail" component={ChatDetailScreen} />
         </Stack.Navigator>
     );
 }

@@ -10,7 +10,7 @@ export type MainStackParamList = {
   Home: undefined;
   ProductDetail: { id: string };
   ProductRegister: undefined;
-  ChatDetail: undefined;
+  ChatDetail: {productId: number};
 };
 
 const Stack = createNativeStackNavigator<MainStackParamList>();

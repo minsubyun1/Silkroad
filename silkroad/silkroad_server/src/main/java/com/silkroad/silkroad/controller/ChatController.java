@@ -74,7 +74,7 @@ public class ChatController {
     @Operation(summary = "메세지 전송", description = "메세지를 전송(저장)합니다.")
     @PostMapping("room/{roomId}/message")
     public ResponseEntity<ApiResponse<Void>> sendMessage(@PathVariable("roomId") Long roomId,
-                            @RequestBody ChatMessageRequest request,
+                            @RequestBody ChatMessageRequest request,    
                             @AuthenticationPrincipal UserDetails userDetails){
         chatService.sendMessage(userDetails.getUsername(), roomId, request);
         return ResponseEntity.ok(new ApiResponse<>(true, "메세지 전송 완료", null));
