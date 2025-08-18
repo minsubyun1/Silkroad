@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createChatRoom, getChatRoomDetail, getChatMessages, sendChatMessage} from '@/src/api/chat';
 import {formatDateLabel, formatTime} from '../../utils/date';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ChatDetailScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -54,9 +53,6 @@ export default function ChatDetailScreen() {
       await sendChatMessage(roomId, message);
       
       setMessage('');
-
-      const token = await AsyncStorage.getItem('accessToken');
-      console.log('🛡️ ChatMessages에서 사용하는 토큰:', token);
 
       const msgList = await getChatMessages(roomId);
       setMessages(msgList);
