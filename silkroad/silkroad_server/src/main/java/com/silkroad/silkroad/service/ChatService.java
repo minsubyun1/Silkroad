@@ -77,7 +77,8 @@ public class ChatService {
                 product.getTitle(),
                 product.getPrice(),
                 product.getImages().isEmpty() ? null : product.getImages().get(0).getImageUrl(),
-                room.getSeller().equals(user) // 판매 완료 처리 시 판별 위함.
+                room.getSeller().equals(user), // 판매 완료 처리 시 판별 위함.
+                product.isSold()
         );
     }
 

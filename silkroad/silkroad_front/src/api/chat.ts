@@ -39,3 +39,8 @@ export const fetchBuyChats = async () => {
   const response = await instance.get(`/chats/rooms/buy`)
   return response.data.data;
 }
+
+export const markAsComplete = async (roomId: number) => {
+  const response = await instance.patch(`/chats/room/${roomId}/complete`);
+  return response.data;
+};
