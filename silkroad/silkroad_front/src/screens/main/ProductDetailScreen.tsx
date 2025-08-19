@@ -33,7 +33,6 @@ export default function ProductDetailScreen() {
         setBookmarkCount(res.data.bookmarkCount);
 
         const bookmarkRes = await fetchBookmarkStatus(id);
-        console.log("찜 여부 응답:", bookmarkRes.data);
         setIsBookmarked(bookmarkRes.data.bookmarked);
 
       } catch (err) {
@@ -87,6 +86,7 @@ export default function ProductDetailScreen() {
       <ProductChatBanner
         productId={product.id} 
         price = {product.price}
+        username = {product.sellerUsername}
         isBookmarked={isBookmarked}
         onToggleBookmark = {handleToggleBookmark}
       />

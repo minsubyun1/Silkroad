@@ -14,4 +14,5 @@ public class ChatRoomDetailResponse {
     private int productPrice;
     private String productImageUrl;
     private boolean isSeller;
+    private boolean isSold;
 }

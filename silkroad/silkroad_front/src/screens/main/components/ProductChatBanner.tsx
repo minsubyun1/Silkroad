@@ -1,11 +1,13 @@
+import React, { useEffect, useState } from 'react';
 import { MainStackParamList } from '@/src/navigation/MainStackNavigator';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+import { MyPageStackParamList } from '@/src/navigation/MyPageStackNavigator';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-
+import { getMyProfile } from '@/src/api/auth';
 interface Props {
   productId: number;
+  username: string;
   price: number;
   isBookmarked: boolean;
   onToggleBookmark: () => void;
@@ -13,22 +15,47 @@ interface Props {
 
 export default function ProductChatBanner({
   productId,
+  username,
   price,
   isBookmarked,
   onToggleBookmark
 }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
-  
+  const [profile, setProfile] = useState<{
+          username: string;
+          name: string;
+          location: string;
+          profileImageUrl: string;
+      } | null>(null);
+
+  useEffect(() => {
+        const fetchUser = async () => {
+          const res = await getMyProfile();
+          setProfile(res);
+        };
+        fetchUser();
+  }, []);
+  const isMyProduct = profile?.username === username;
+
+  const handlePress = () => {
+    if (isMyProduct) {
+      navigation.navigate('ChatList');
+    } else {
+      navigation.navigate('ChatDetail', { productId });
+    }
+  };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onToggleBookmark}>
-        <Text style={styles.likes}>{isBookmarked ? '♥' : '♡'}</Text>
-      </TouchableOpacity>
-      <Text style={styles.price}>{Number(price).toLocaleString()}원</Text>
-      <TouchableOpacity style={styles.button} onPress={() => {console.log('🔥 navigating to ChatDetail with productId:', productId); navigation.navigate('ChatDetail', {productId});} }>
-        <Text style={styles.buttonText}>거래 채팅하기</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity onPress={onToggleBookmark}>
+      <Text style={styles.likes}>{isBookmarked ? '♥' : '♡'}</Text>
+    </TouchableOpacity>
+    <Text style={styles.price}>{Number(price).toLocaleString()}원</Text>
+    <TouchableOpacity style={styles.button} onPress={handlePress}>
+      <Text style={styles.buttonText}>
+        {isMyProduct ? '채팅 목록 보기' : '거래 채팅하기'}
+      </Text>
+    </TouchableOpacity>
+  </View>
   );
 }
 

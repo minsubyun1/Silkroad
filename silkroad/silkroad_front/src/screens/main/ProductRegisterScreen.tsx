@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Alert
 } from 'react-native';
@@ -7,6 +7,7 @@ import ModalSelector from 'react-native-modal-selector';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { registerProduct } from '@/src/api/product';
+import { getMyProfile } from '@/src/api/auth';
 
 export default function ProductRegisterScreen() {
   const [title, setTitle] = useState('');
@@ -15,6 +16,13 @@ export default function ProductRegisterScreen() {
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const navigation = useNavigation();
+
+  const [profile, setProfile] = useState<{
+        username: string;
+        name: string;
+        location: string;
+        profileImageUrl: string;
+    } | null>(null);
 
   const pickImages = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -42,7 +50,11 @@ export default function ProductRegisterScreen() {
   { key: 'BEAUTY', label: '뷰티' },
   { key: 'SPORTS', label: '스포츠' },
   { key: 'ETC', label: '기타' },
+
+  
 ];
+
+
 
   const handleSubmit = async() => {
     if (!title || !price || !description || images.length === 0) {
@@ -75,13 +87,21 @@ export default function ProductRegisterScreen() {
     }
   }
 
+  useEffect(() => {
+      const fetchUser = async () => {
+        const res = await getMyProfile();
+        setProfile(res);
+      };
+      fetchUser();
+    }, []);
+
   return ( 
     <ScrollView style={styles.container}>
       <View style={styles.header}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons name="chevron-back" size={24} color="#222" />
               </TouchableOpacity>
-              <Text style={styles.headerText}>윤브라보</Text>
+              <Text style={styles.headerText}>{profile?.name}</Text>
               <View style={{ width: 24 }} /> {/* 오른쪽 여백 맞추기 */}
       </View>
 

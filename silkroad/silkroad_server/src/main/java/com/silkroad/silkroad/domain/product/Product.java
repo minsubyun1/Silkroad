@@ -43,7 +43,7 @@ public class Product {
 
     @Setter
     @Column(nullable = false)
-    private boolean isSold; // 판매 완료 여부 (true면 파냄 완료)
+    private boolean isSold; // 판매 완료 여부
 
     @Setter
     @Column(nullable = false)

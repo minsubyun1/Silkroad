@@ -5,12 +5,14 @@ import HomeScreen from '@/src/screens/main/HomeScreen';
 import ProductDetailScreen from '@/src/screens/main/ProductDetailScreen';
 import ProductRegisterScreen from '@/src/screens/main/ProductRegisterScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
+import ChatListScreen from '../screens/chat/ChatListScreen';
 
 export type MainStackParamList = {
   Home: undefined;
   ProductDetail: { id: string };
   ProductRegister: undefined;
   ChatDetail: {productId: number};
+  ChatList: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -22,6 +24,7 @@ export default function MainStackNavigator() {
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
       <Stack.Screen name="ProductRegister" component={ProductRegisterScreen} />
       <Stack.Screen name="ChatDetail" component={ChatDetailScreen} />
+      <Stack.Screen name="ChatList" component={ChatListScreen} />
     </Stack.Navigator>
   );
 }
